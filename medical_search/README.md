@@ -1,6 +1,6 @@
 # Generative AI for Medical Search
 
-Demonstrates using Enterprise Search for Q&A on a biomedical corpus with citations.  
+Demonstrates using Enterprise Search for Q&A on a corpus of PDF documents with citations.  
 
 ![Architecture](https://github.com/vijaykyr/genai-demos/blob/main/medical_search/app/images/architecture.png "Architecture")
 
