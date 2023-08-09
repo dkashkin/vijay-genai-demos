@@ -6,7 +6,7 @@ from retrieval import get_corpus
 import utils
 
 st.set_page_config(
-    page_title="Q&A over Biomedical Literature",
+    page_title="Q&A over PDF files",
     page_icon='app/images/logo.png',
 )
 
@@ -29,5 +29,5 @@ data = AgGrid(
 selected_rows = data["selected_rows"]
 
 if len(selected_rows) != 0:
-    st.markdown(f"*NCBI REF:* {selected_rows[0]['ncbi_ref']}")
+    st.markdown(f"*File:* {selected_rows[0]['title']}")
     st.markdown(utils.show_pdf(selected_rows[0]['gcs_uri']), unsafe_allow_html=True)

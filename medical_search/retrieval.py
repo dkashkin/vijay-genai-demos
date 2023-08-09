@@ -14,7 +14,6 @@
 from __future__ import annotations
 
 import logging
-#logging.basicConfig(level=logging.INFO)
 import json
 
 import streamlit as st
@@ -34,9 +33,13 @@ def enterprise_search_list_docs(
     client = discoveryengine.DocumentServiceClient()
     parent = "projects/" + project_id + "/locations/" + location + \
         "/collections/default_collection/dataStores/" + search_engine_id + "/branches/default_branch"
+    logging.info(f"List documents parent={parent}")
     request = discoveryengine.ListDocumentsRequest(parent=parent)
-    return client.list_documents(request=request)
-
+    response = client.list_documents(request=request)
+    docs = []
+    for doc in response.documents:
+        docs.append(doc)
+    return docs
 
 def enterprise_search_query(
         project_id: str,
@@ -73,18 +76,21 @@ def enterprise_search_query(
 
 def _get_sources(response: SearchPager) -> list[(str, str, str, list)]:
     """Parse ES response and generate list of tuples for sources"""
+    logging.info(response.results)
+    logging.info("--------")
     sources = []
     for result in response.results:
+        logging.info(f"result={result}")
         doc_info = MessageToDict(result.document._pb)
         if doc_info.get('derivedStructData'):
             content = [snippet.get('snippet') for snippet in
                        doc_info.get('derivedStructData', {}).get('snippets', []) if
                        snippet.get('snippet') is not None]
             metadata = doc_info.get('structData')
+            if not metadata:
+                metadata = {"title": doc_info.get('derivedStructData')['link'].split('/')[-1]}
             sources.append((
                 metadata["title"],
-                metadata["ncbi_ref"],
-                metadata["download"],
                 doc_info.get('derivedStructData')['link'],
                 content))
     return sources
@@ -102,15 +108,24 @@ def generate_answer(query: str) -> dict:
     return result
 
 
-@st.cache_data
 def get_corpus() -> list[dict]:
     corpus = []
+    logging.basicConfig(level=logging.DEBUG)
     docs = enterprise_search_list_docs(
         project_id=utils.PROJECT_ID,
-        search_engine_id=utils.SEARCH_ENGINE_ID)
+        search_engine_id=utils.SEARCH_ENGINE_ID
+    )
+    logging.info(f"enterprise_search_list_docs returned {len(docs)} docs:")
+
     for doc in docs:
-        metadata = json.loads(doc.json_data)
+        metadata = {}
+        if not doc.json_data:
+            metadata['title'] = doc.content.uri.split('/')[-1]
+        else:
+            logging.info(f"Deserializing json_data=[{doc.json_data}]")
+            metadata = json.loads(doc.json_data)
         metadata['gcs_uri'] = doc.content.uri
+        logging.info( metadata )
         corpus.append(metadata)
     logging.info(corpus)
     return corpus

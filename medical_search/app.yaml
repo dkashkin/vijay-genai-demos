@@ -8,4 +8,4 @@ runtime_config:
 entrypoint: streamlit run About.py --server.port $PORT
 
 env_variables:
-    SEARCH_ENGINE_ID: your-enterprise-search-engine-id
+    SEARCH_ENGINE_ID: jhu-demo_1691600464860

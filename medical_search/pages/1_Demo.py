@@ -19,28 +19,17 @@ from retrieval import generate_answer
 import utils
 
 st.set_page_config(
-    page_title="Q&A over Biomedical Literature",
+    page_title="Q&A over PDF Documents",
     page_icon='app/images/logo.png',
     layout="wide",
 )
 
-st.title("Q&A over Biomedical Literature")
+st.title("Q&A over PDF Documents")
 
 questions = [
     "Select a question",
-    "Does metformin interfere thyroxine absorption?",
-    "Orteronel was developed for treatment of which cancer?",
-    "Has Denosumab (Prolia) been approved by FDA?",
-    "What are the classes of anti-arrhythmic drugs according to Vaughan-Williams classification?"
-]
-
-# Not currently used in UI, but these are the ground truth answers from the BioASQ dataset
-golden_answers = [
-    "Answer from medical professional",
-    "No. There are not reported data indicating that metformin reduce with thyroxine absorption.",
-    "Orteronel was developed for treatment of castration-resistant prostate cancer.",
-    "Yes, Denosumab was approved by the FDA in 2010.",
-    "Antiarrhythmic drugs can be divided into four Vaughan Williams classes (I-IV). Class I antiarrhythmic agents have as a common action, blockade of the sodium channels. Class II agents are antisympathetic drugs, particularly the beta-adrenoceptor blockers. Class-III antiarrhythmics have as a common action the potassium-channel blockade. Class IV antiarrhythmic drugs are calcium channel blockers.",
+    "What is the main function of the Frontal Cortex?",
+    "What is hierarchical reinforcement learning?"
 ]
 
 st.divider()
@@ -64,7 +53,7 @@ with cols[2]:
 
 st.divider()
 
-df = pd.DataFrame(sources, columns=['title', 'ncbi_ref', 'download', 'gcs_uri', 'content'])
+df = pd.DataFrame(sources, columns=['title', 'gcs_uri', 'content'])
 gb = GridOptionsBuilder.from_dataframe(df[['title']])
 gb.configure_selection()
 gb.configure_column('title', header_name="Sources (click to expand)")
@@ -81,7 +70,7 @@ if sources:
     selected_rows = data["selected_rows"]
 
     if len(selected_rows) != 0:
-        st.markdown(f"**NCBI Reference:** {selected_rows[0]['ncbi_ref']}")
+        st.markdown(f"*File:* {selected_rows[0]['title']}")
         with st.expander('View Paper', expanded=False):
             st.markdown(utils.show_pdf(selected_rows[0]['gcs_uri']), unsafe_allow_html=True)
         st.markdown('**Relevant Snippets**')
