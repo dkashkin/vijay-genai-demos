@@ -9,3 +9,16 @@ entrypoint: streamlit run About.py --server.port $PORT
 
 env_variables:
     SEARCH_ENGINE_ID: jhu-demo_1691600464860
+
+resources:
+    cpu: 2
+    memory_gb: 4
+    disk_size_gb: 10
+
+readiness_check:
+  path: "/"
+  check_interval_sec: 20
+  timeout_sec: 15
+  failure_threshold: 2
+  success_threshold: 2
+  app_start_timeout_sec: 60
