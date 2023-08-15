@@ -1,5 +1,8 @@
 import streamlit as st
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
+logging.info("JHU_Streamlit_Demo is starting")
 st.set_page_config(
     page_title="Q&A over PDF documents",
     page_icon='app/images/logo.png',
